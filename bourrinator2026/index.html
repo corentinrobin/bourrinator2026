@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Bourrinator 2026</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2212%22 fill=%22%23111%22/%3E%3Crect x=%2230%22 y=%2222%22 width=%226%22 height=%2236%22 fill=%22%23c8955a%22/%3E%3Crect x=%2214%22 y=%228%22 width=%2238%22 height=%2218%22 rx=%223%22 fill=%22%23ffb400%22/%3E%3C/svg%3E">
+<link rel="stylesheet" href="lib/fonts/fonts.css">
+<link rel="stylesheet" href="css/style.css">
+<script type="importmap">
+{ "imports": {
+  "three": "./lib/three/build/three.module.js",
+  "three/addons/": "./lib/three/addons/"
+} }
+</script>
+</head>
+<body>
+<div id="game"></div>
+<div id="grain"></div>
+<div id="flash"></div>
+<div id="underwater"></div>
+
+<!-- CHARGEMENT -->
+<section id="scr-loading" class="screen active">
+  <div class="load-box">
+    <div class="logo mid"><div class="logo-main">BOURRINATOR</div><div class="logo-year">2026</div></div>
+    <div class="load-bar"><i id="load-fill"></i></div>
+    <div id="load-text" class="load-text">Chargement du bordel…</div>
+  </div>
+</section>
+
+<!-- ÉCRAN TITRE -->
+<section id="scr-title" class="screen">
+  <div class="title-wrap">
+    <div class="hazard"></div>
+    <div class="logo big">
+      <div class="logo-main" data-text="BOURRINATOR">BOURRINATOR</div>
+      <div class="logo-year">2026</div>
+    </div>
+    <div class="logo-sub">Simulateur de défoulement contrôlé. Enfin, contrôlé…</div>
+    <div class="hazard"></div>
+    <div class="press">Appuyez sur une touche</div>
+    <div class="tagline" id="title-tagline"></div>
+  </div>
+  <div class="corner-note">Déconseillé aux assureurs · PEGI « Vaisselle »</div>
+</section>
+
+<!-- MENU PRINCIPAL -->
+<section id="scr-menu" class="screen">
+  <div class="menu-shade"></div>
+  <div class="menu-left">
+    <div class="logo small"><div class="logo-main">BOURRINATOR</div><div class="logo-year">2026</div></div>
+    <nav class="menu" id="main-menu">
+      <button data-act="play"><span class="idx">01</span><span class="lbl">Jouer</span><small>Choisir où tout casser</small></button>
+      <button data-act="settings"><span class="idx">02</span><span class="lbl">Réglages</span><small>Souris, son, image</small></button>
+      <button data-act="howto"><span class="idx">03</span><span class="lbl">Mode d'emploi</span><small>Pour les bourrins qui lisent</small></button>
+      <button data-act="credits"><span class="idx">04</span><span class="lbl">Crédits</span><small>Les coupables</small></button>
+    </nav>
+  </div>
+  <div class="menu-quote"><div class="q-mark">«</div><p id="menu-quote"></p><cite>— Le Narrateur</cite></div>
+  <footer class="menu-foot"><span>v1.0 · build 2026.09</span><span>Aucun meuble n'a été respecté pendant le développement de ce jeu.</span></footer>
+</section>
+
+<!-- CHOIX DU TERRAIN -->
+<section id="scr-env" class="screen panel-screen">
+  <header class="scr-head">
+    <div class="step"><b>01</b> / 02</div>
+    <h2>Choisis ton terrain</h2>
+    <p>Où est-ce qu'on va faire des dégâts ?</p>
+  </header>
+  <div class="env-cards" id="env-cards"></div>
+  <div class="mode-row">
+    <span>Formule</span>
+    <button class="toggle on" data-mode="chrono"><b>Chrono</b><small>3 minutes pour tout raser</small></button>
+    <button class="toggle" data-mode="libre"><b>Défouloir libre</b><small>Sans limite de temps</small></button>
+  </div>
+  <footer class="scr-foot">
+    <button class="btn ghost" data-act="back">← Retour</button>
+    <button class="btn primary" data-act="next">Choisir l'arme →</button>
+  </footer>
+</section>
+
+<!-- CHOIX DE L'ARME -->
+<section id="scr-weapon" class="screen panel-screen">
+  <header class="scr-head">
+    <div class="step"><b>02</b> / 02</div>
+    <h2>Choisis ton argument</h2>
+    <p>Les huit sont disponibles en jeu avec les touches 1 à 8. Celle-ci, c'est pour commencer.</p>
+  </header>
+  <div class="weapon-layout">
+    <div class="weapon-cards" id="weapon-cards"></div>
+    <aside class="weapon-detail" id="weapon-detail"></aside>
+  </div>
+  <footer class="scr-foot">
+    <button class="btn ghost" data-act="back">← Retour</button>
+    <button class="btn primary big" data-act="start">C'est parti !</button>
+  </footer>
+</section>
+
+<!-- RÉGLAGES -->
+<section id="scr-settings" class="screen panel-screen">
+  <header class="scr-head"><div class="step">Réglages</div><h2>Mise au point</h2><p>On règle la bête avant de la lâcher.</p></header>
+  <div class="settings" id="settings"></div>
+  <footer class="scr-foot"><button class="btn primary" data-act="back">← Retour</button></footer>
+</section>
+
+<!-- MODE D'EMPLOI -->
+<section id="scr-howto" class="screen panel-screen">
+  <header class="scr-head"><div class="step">Mode d'emploi</div><h2>Comment on casse</h2><p>C'est pas compliqué. C'est même le principe.</p></header>
+  <div class="howto">
+    <div class="keys-grid">
+      <div><kbd>Z</kbd><kbd>Q</kbd><kbd>S</kbd><kbd>D</kbd><span>Se déplacer (ou W A S D, ou les flèches)</span></div>
+      <div><kbd class="wide">Souris</kbd><span>Regarder</span></div>
+      <div><kbd class="wide">Clic gauche</kbd><span>Frapper / tirer (maintenir pour les armes automatiques)</span></div>
+      <div><kbd>1</kbd>…<kbd>8</kbd><span>Changer d'arme (ou molette)</span></div>
+      <div><kbd>R</kbd><span>Recharger</span></div>
+      <div><kbd class="wide">Espace</kbd><span>Sauter</span></div>
+      <div><kbd class="wide">Maj</kbd><span>Courir</span></div>
+      <div><kbd class="wide">Échap</kbd><span>Pause</span></div>
+    </div>
+    <div class="howto-rules">
+      <h3>Le barème</h3>
+      <p>Chaque objet cassé ou déplacé est facturé à sa valeur. Casser vite fait grimper le <b>multiplicateur</b> jusqu'à ×10.</p>
+      <p>Tout tient debout grâce à ce qu'il y a dessous. Sapez la base : le reste suit.</p>
+      <p>Le verre, les écrans et la vaisselle ne supportent ni les coups, ni les chutes.</p>
+      <p>À la fin, on vous présente <b>l'addition</b>. Vous n'êtes pas obligé de la régler.</p>
+    </div>
+  </div>
+  <footer class="scr-foot"><button class="btn primary" data-act="back">← Retour</button></footer>
+</section>
+
+<!-- CRÉDITS -->
+<section id="scr-credits" class="screen panel-screen">
+  <header class="scr-head"><div class="step">Crédits</div><h2>Les coupables</h2><p>Merci de ne pas leur envoyer la facture.</p></header>
+  <div class="credits">
+    <dl>
+      <dt>Conception, code, casse</dt><dd>Pensé par Corentin ROBIN, développé par Claude.</dd>
+      <dt>Moteur 3D</dt><dd>three.js r170 (licence MIT), embarqué en local</dd>
+      <dt>Physique, sons, musique</dt><dd>Faits maison, à la main, sans filet</dd>
+      <dt>Répliques</dt><dd>Le Narrateur, qui a beaucoup vu et peu pardonné</dd>
+      <dt>Mobilier</dt><dd>Plus disponible</dd>
+      <dt>Remerciements</dt><dd>Aux assurances, pour leur compréhension future</dd>
+    </dl>
+  </div>
+  <footer class="scr-foot"><button class="btn primary" data-act="back">← Retour</button></footer>
+</section>
+
+<!-- HUD -->
+<section id="hud">
+  <div class="hud-tl">
+    <div class="hud-env" id="hud-env">LE MAGASIN</div>
+    <div class="hud-timer" id="hud-timer">3:00</div>
+  </div>
+  <div class="hud-tc">
+    <div class="dmg-label"><span>Démolition</span><b id="hud-pct">0 %</b></div>
+    <div class="dmg-bar"><i id="hud-pctbar"></i><s style="left:25%"></s><s style="left:50%"></s><s style="left:75%"></s></div>
+  </div>
+  <div class="hud-tr">
+    <div class="hud-score-label">Montant des dégâts</div>
+    <div class="hud-score" id="hud-score">0 €</div>
+    <div class="hud-combo" id="hud-combo">
+      <div class="combo-top"><span id="combo-mult">×1</span><span id="combo-label"></span></div>
+      <div class="combo-bar"><i id="combo-fill"></i></div>
+    </div>
+  </div>
+  <div class="hud-feed" id="hud-feed"></div>
+  <div id="crosshair" class="ch-gun"><i></i><i></i><i></i><i></i><b></b></div>
+  <div id="hitmarker"><i></i><i></i><i></i><i></i></div>
+  <div id="popups"></div>
+  <div class="hud-quote" id="hud-quote"><div class="q-who">Le Narrateur</div><div class="q-text" id="q-text"></div></div>
+  <div class="hud-br">
+    <div class="w-slots" id="w-slots"></div>
+    <div class="w-main">
+      <div class="w-name" id="w-name">LA MASSE</div>
+      <div class="w-nick" id="w-nick"></div>
+      <div class="w-ammo"><span id="w-ammo">∞</span><small id="w-reserve"></small></div>
+      <div class="w-reload" id="w-reload"><i></i><span>Rechargement</span></div>
+    </div>
+  </div>
+  <div class="hud-hint" id="hud-hint"><kbd>R</kbd> recharger <kbd>1-8</kbd> armes <kbd>Échap</kbd> pause</div>
+  <div class="announce" id="announce"></div>
+  <div class="slowmo" id="slowmo"></div>
+</section>
+
+<!-- PAUSE -->
+<section id="scr-pause" class="screen overlay">
+  <div class="pause-box">
+    <div class="step">Pause</div>
+    <h2>On souffle un peu</h2>
+    <p class="pause-quote" id="pause-quote"></p>
+    <nav class="menu compact">
+      <button data-act="resume"><span class="lbl">Reprendre</span></button>
+      <button data-act="restart"><span class="lbl">Recommencer</span></button>
+      <button data-act="finish"><span class="lbl">Demander l'addition</span></button>
+      <button data-act="settings"><span class="lbl">Réglages</span></button>
+      <button data-act="quit"><span class="lbl">Quitter au menu</span></button>
+    </nav>
+  </div>
+</section>
+
+<!-- RÉSULTATS -->
+<section id="scr-results" class="screen">
+  <div class="results-wrap">
+    <div class="results-side">
+      <div class="step">Fin de séance</div>
+      <h2 class="res-title">L'addition</h2>
+      <div class="res-rank-label">Votre grade</div>
+      <div class="res-rank" id="res-rank">—</div>
+      <p class="res-quote" id="res-quote"></p>
+      <div class="res-stats" id="res-stats"></div>
+      <div class="res-actions">
+        <button class="btn primary" data-act="again">Remettre ça</button>
+        <button class="btn ghost" data-act="other">Changer de crèmerie</button>
+        <button class="btn ghost" data-act="menu">Menu principal</button>
+      </div>
+    </div>
+    <div class="receipt" id="receipt"></div>
+  </div>
+</section>
+
+<div id="lock-hint" class="lock-hint"><b>Cliquez pour reprendre le carnage</b><small>Échap pour le menu pause</small></div>
+<div id="err" class="err"></div>
+
+<script>
+  window.addEventListener('error', (e) => {
+    const t = document.getElementById('load-text');
+    if (t && document.getElementById('scr-loading').classList.contains('active')) t.textContent = 'Erreur : ' + (e.message || e);
+  });
+</script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
